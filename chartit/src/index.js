@@ -7,9 +7,11 @@ function formatActions (actions) {
 	var newActions = [];
 	if (actions) {
 		newActions = actions.map(function(elem, idx, orig) {
-			var newElem = elem;
-			if (orig[idx-1]) {
-				newElem.lastYardLine = orig[idx-1].yard_line;
+			var newElem = elem, prevIdx = idx-1;
+			if (orig[prevIdx]) {
+				newElem.lastYardLine = orig[prevIdx].yard_line;
+				newElem.lastSide = orig[prevIdx].side;
+				newElem.lastSummary = orig[prevIdx].summary;
 			}
 			return elem = newElem;
 		});
@@ -34,8 +36,12 @@ function Play (props) {
 		let formattedActions = formatActions(props.actions);
 
 		if (formattedActions) {
+
 			plays = formattedActions.map((play) =>
-				<li>side: {play.side}, yard: {play.yard_line}</li>
+				<div>
+					<div>{play.lastSummary}</div>
+					<hr style={getPlayLengthStyle(calcYardsPerPlay( { yard_line : play.lastYardLine, side : play.lastSide }, { yard_line : play.yard_line, side : play.lastSide }, props.team))} />
+				</div>
 			);
 		}
 	}
@@ -140,6 +146,37 @@ class Game extends React.Component {
 
 // ========================================
 
+function calcYardsPerPlay (startYardline, endYardline, team) {
+	let yards = 0;
+	// make this a switch statement
+	if (team == startYardline.side && team == endYardline.side) {
+		yards = endYardline.yard_line - startYardline.yard_line;
+	} else if (team != startYardline.side && team != endYardline.side) {
+		yards = startYardline.yard_line - endYardline.yard_line;
+	} else if (team == startYardline.side && team != endYardline.side) {
+		yards = (50 - startYardline.yard_line) + (50 - endYardline.yard_line);
+	} else if (team != startYardline.side && team == endYardline.side) {
+		yards = -1 * ((50 - startYardline.yard_line) + (50 - endYardline.yard_line));
+	}
+
+	return yards;
+}
+
+function getPlayLengthStyle (yards) {
+	if (yards) {
+		return {
+			backgroundColor : '#990000',
+			width : (yards * 5) + 'px',
+			height : '10px'
+		}
+	} else {
+		return {
+			display : 'none'
+		}
+	}
+}
+
+// ========================================
 ReactDOM.render(
   <Game />,
   document.getElementById('root')
