@@ -3,35 +3,77 @@ import ReactDOM from 'react-dom';
 import $ from 'jquery';
 import './index.css';
 
-function Play (props) {
-	let listItems = [];
-
-	if (props.actions) {
-		listItems = props.actions.map((play) =>
-			<li>{play.summary}</li>
-		);
+function formatActions (actions) {
+	var newActions = [];
+	if (actions) {
+		newActions = actions.map(function(elem, idx, orig) {
+			var newElem = elem, prevIdx = idx-1;
+			if (orig[prevIdx]) {
+				newElem.lastYardLine = orig[prevIdx].yard_line;
+				newElem.lastSide = orig[prevIdx].side;
+				newElem.lastSummary = orig[prevIdx].summary;
+			}
+			return elem = newElem;
+		});
+		// console.log('in the map function ' + formattedActions);
 	}
-return listItems;
-	return (
-			(props.actions) ?
-			<li>{props.actions[0].summary}</li>:
-			<li>'no'</li>
-		
-	)
+	return newActions;
+
 }
 
-function Drive (props) {
-	return (
-		<div>
-			<div>{props.type} : {props.team} : {props.summary}</div>
-			<ul>
-				<Play
-					team={props.team}
-					actions={props.actions}
-				></Play>
-			</ul>
-		</div>
-	)
+// Play
+// side (of field)
+// yard marker (at start of play)
+// previous side
+// previous yard marker
+function Play (props) {
+	let plays = [];
+	// let formattedActions = [];
+
+		// formatActions(props.actions);
+
+	if (props.actions) {
+		let formattedActions = formatActions(props.actions);
+
+		if (formattedActions) {
+
+			plays = formattedActions.map((play) =>
+				<div>
+					<div>{play.lastSummary}</div>
+					<hr style={getPlayLengthStyle(calcYardsPerPlay( { yard_line : play.lastYardLine, side : play.lastSide }, { yard_line : play.yard_line, side : play.lastSide }, props.team))} />
+				</div>
+			);
+		}
+	}
+return plays;
+}
+
+class Drive extends React.Component {
+	constructor (props) {
+		super(props);
+		// this.state = props;
+	}
+
+	render() {
+		const current = this.props;
+		// this.setState({ lastPlay : {
+		// 	side : current.side,
+		// 	yardLine : current.yard_line
+		// }});
+
+		return (
+			<div>
+				<div>{current.type} : {current.team} : {current.summary}</div>
+				<ul>
+					<Play
+						team={current.team}
+						actions={current.actions}
+						lastPlay={current.lastPlay}
+					></Play>
+				</ul>
+			</div>
+		)
+	}
 }
 
 class Game extends React.Component {
@@ -40,7 +82,11 @@ class Game extends React.Component {
 		this.state = {
 			isReady : false,
 			pageTitle : 'Waiting',
-			playbyplay : 'Loading plays'
+			playbyplay : 'Loading plays',
+			lastPlay : {
+				side : '',
+				yardLine : 0
+			}
 		}
 	}
 
@@ -54,6 +100,7 @@ class Game extends React.Component {
 		})
 		.done(function(xhr, status) {
 			ctx.setState({ pageTitle : xhr.away_team.market + ' vs. ' + xhr.home_team.market });
+
 			ctx.renderPlayByPlay(xhr.quarters[0].pbp);
 		})
 		.fail(function(xhr, status, error) {
@@ -73,7 +120,8 @@ class Game extends React.Component {
 				team={event.team}
 				summary={event.summary}
 				actions={event.actions}
-
+				side={event.side}
+				yardline={event.yard_line}
 			>
 			</Drive>
 
@@ -98,6 +146,37 @@ class Game extends React.Component {
 
 // ========================================
 
+function calcYardsPerPlay (startYardline, endYardline, team) {
+	let yards = 0;
+	// make this a switch statement
+	if (team == startYardline.side && team == endYardline.side) {
+		yards = endYardline.yard_line - startYardline.yard_line;
+	} else if (team != startYardline.side && team != endYardline.side) {
+		yards = startYardline.yard_line - endYardline.yard_line;
+	} else if (team == startYardline.side && team != endYardline.side) {
+		yards = (50 - startYardline.yard_line) + (50 - endYardline.yard_line);
+	} else if (team != startYardline.side && team == endYardline.side) {
+		yards = -1 * ((50 - startYardline.yard_line) + (50 - endYardline.yard_line));
+	}
+
+	return yards;
+}
+
+function getPlayLengthStyle (yards) {
+	if (yards) {
+		return {
+			backgroundColor : '#990000',
+			width : (yards * 5) + 'px',
+			height : '10px'
+		}
+	} else {
+		return {
+			display : 'none'
+		}
+	}
+}
+
+// ========================================
 ReactDOM.render(
   <Game />,
   document.getElementById('root')
