@@ -3,18 +3,41 @@ import ReactDOM from 'react-dom';
 import $ from 'jquery';
 import './index.css';
 
-function formatActions (actions) {
+function formatActions (actions, team) {
 	var newActions = [];
 	if (actions) {
-		newActions = actions.map(function(elem, idx, orig) {
-			var newElem = elem, prevIdx = idx-1;
-			if (orig[prevIdx]) {
-				newElem.lastYardLine = orig[prevIdx].yard_line;
-				newElem.lastSide = orig[prevIdx].side;
-				newElem.lastSummary = orig[prevIdx].summary;
+		// newActions = actions.map(function(elem, idx, orig) {
+		// 	if (elem.type != 'play') {
+		// 		break;
+		// 	}
+		// 	var newElem = elem, prevIdx = idx-1;
+		// 	if (orig[prevIdx]) {
+		// 		newElem.lastYardLine = orig[prevIdx].yard_line;
+		// 		newElem.lastSide = orig[prevIdx].side;
+		// 		newElem.lastSummary = orig[prevIdx].summary;
+		// 	}
+		// 	return newElem;
+		// });
+
+		let filteredActions = actions.filter(function(elem) {
+			if (elem.type === 'event') {
+				return false;
 			}
-			return elem = newElem;
+			elem.team = team;
+			return true;
 		});
+
+		newActions = filteredActions.reduce(function(result, elem, idx, orig) {
+			var newElem = elem, prevIdx = idx-1;
+			if (result[prevIdx] && orig[prevIdx].type === 'play') {
+				newElem.lastYardLine = result[prevIdx].yard_line;
+				newElem.lastSide = result[prevIdx].side;
+				newElem.lastSummary = result[prevIdx].summary;
+			}
+		    result.push(newElem);
+		    return result;
+		}, []);
+
 		// console.log('in the map function ' + formattedActions);
 	}
 	return newActions;
@@ -33,15 +56,13 @@ function Play (props) {
 		// formatActions(props.actions);
 
 	if (props.actions) {
-		let formattedActions = formatActions(props.actions);
+		let formattedActions = formatActions(props.actions, props.team);
 
-		if (formattedActions) {
+		if (formattedActions.length > 0) {
 
 			plays = formattedActions.map((play) =>
-				<div>
-					<div>{play.lastSummary}</div>
-					<hr style={getPlayLengthStyle(calcYardsPerPlay( { yard_line : play.lastYardLine, side : play.lastSide }, { yard_line : play.yard_line, side : play.lastSide }, props.team))} />
-				</div>
+				// <li>{play.side} == {calcYardsPerPlay( { yard_line : play.lastYardLine, side : play.lastSide }, { yard_line : play.yard_line, side : play.side }, props.team)} :: {play.lastSummary}</li>
+				<hr className="drivebar hometeam" title={play.lastSummary} style={getPlayLengthStyle(play.team, play, calcYardsPerPlay( { yard_line : play.lastYardLine, side : play.lastSide }, { yard_line : play.yard_line, side : play.side }, props.team))} />
 			);
 		}
 	}
@@ -64,13 +85,11 @@ class Drive extends React.Component {
 		return (
 			<div>
 				<div>{current.type} : {current.team} : {current.summary}</div>
-				<ul>
 					<Play
 						team={current.team}
 						actions={current.actions}
 						lastPlay={current.lastPlay}
 					></Play>
-				</ul>
 			</div>
 		)
 	}
@@ -131,12 +150,28 @@ class Game extends React.Component {
 
 	render() {
 		return (
-			<div>
-				<h1>
-					{ this.state.pageTitle }
-				</h1>
-				<div>
-					{this.state.playbyplay}
+			<div class="fieldContainer">
+				<div className="fieldSub">
+					<h1>
+						{ this.state.pageTitle }
+					</h1>
+					<div className="field" ref={field => {this.field = field}}>
+						{this.state.playbyplay}
+					</div>
+				</div>
+				<div class="gridiron">
+					<div class="gridline endzone">end zone</div>
+					<div class="gridline">10</div>
+					<div class="gridline">20</div>
+					<div class="gridline">30</div>
+					<div class="gridline">40</div>
+					<div class="gridline">50</div>
+					<div class="gridline">40</div>
+					<div class="gridline">30</div>
+					<div class="gridline">20</div>
+					<div class="gridline">10</div>
+					<div class="gridline"></div>
+					<div class="gridline endzone">end zone</div>
 				</div>
 			</div>
 		)
@@ -162,12 +197,17 @@ function calcYardsPerPlay (startYardline, endYardline, team) {
 	return yards;
 }
 
-function getPlayLengthStyle (yards) {
+function getPlayLengthStyle (team, play, yards) {
+	let margLeft = (play.side != play.lastSide) ? (play.lastYardLine) : play.lastYardLine;
+	if (team != play.lastSide) {
+		margLeft = 100 - margLeft;
+	}
 	if (yards) {
 		return {
-			backgroundColor : '#990000',
-			width : (yards * 5) + 'px',
-			height : '10px'
+			// backgroundColor : '#990000',
+			width : (yards * 8) + 'px',
+			height : '15px',
+			marginLeft : (margLeft * 8) + 'px'
 		}
 	} else {
 		return {
@@ -175,6 +215,7 @@ function getPlayLengthStyle (yards) {
 		}
 	}
 }
+
 
 // ========================================
 ReactDOM.render(
