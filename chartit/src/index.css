@@ -12,3 +12,52 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+.drivebar {
+	border: none;
+	margin-left: 0;
+}
+
+.hometeam {
+	background-color: #003366;
+}
+
+.field {
+	width: 800px;
+}
+
+.fieldSub {
+	position: absolute;
+	top: 0;
+	z-index: 50;
+}
+
+.fieldContainer {
+	position: relative;
+}
+
+.gridiron {
+	background-color: #006600;
+	width: 972px;
+	height: 700px;
+	border: solid 1px #ffffff;
+	clear: both;
+	position: absolute;
+	top: 0;
+}
+
+.gridline {
+	height: 100%;
+	width: 80px;
+	border-right: solid 1px #ffffff;
+	color: #ffffff;
+	float: left;
+	text-align: right;
+	font-family: Allerta Stencil;
+}
+
+.endzone {
+	background-color: #cccccc;
+	color: #000000;
+}
+
