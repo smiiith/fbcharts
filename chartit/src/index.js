@@ -61,8 +61,9 @@ function Play (props) {
 		if (formattedActions.length > 0) {
 
 			plays = formattedActions.map((play) =>
-				// <li>{play.side} == {calcYardsPerPlay( { yard_line : play.lastYardLine, side : play.lastSide }, { yard_line : play.yard_line, side : play.side }, props.team)} :: {play.lastSummary}</li>
-				<hr className="drivebar hometeam" title={play.lastSummary} style={getPlayLengthStyle(play.team, play, calcYardsPerPlay( { yard_line : play.lastYardLine, side : play.lastSide }, { yard_line : play.yard_line, side : play.side }, props.team))} />
+				// <li>{props.homeTeam} == {calcYardsPerPlay( { yard_line : play.lastYardLine, side : play.lastSide }, { yard_line : play.yard_line, side : play.side }, props.team)} :: {play.lastSummary}</li>
+				<li className="drivebar hometeam" title={play.lastSummary} style={getPlayLengthStyle(props.homeTeam, play.team, play, calcYardsPerPlay( { yard_line : play.lastYardLine, side : play.lastSide }, { yard_line : play.yard_line, side : play.side }, props.team))} >
+				</li>
 			);
 		}
 	}
@@ -72,24 +73,29 @@ return plays;
 class Drive extends React.Component {
 	constructor (props) {
 		super(props);
-		// this.state = props;
 	}
 
 	render() {
 		const current = this.props;
+		// if (!current.actions) {
+		// 	return false;
+		// }
 		// this.setState({ lastPlay : {
 		// 	side : current.side,
 		// 	yardLine : current.yard_line
 		// }});
 
 		return (
-			<div>
-				<div>{current.type} : {current.team} : {current.summary}</div>
+			<div className={(current.team === this.props.homeTeam) ? 'flipY' : ''}>
+				<div>{current.team}</div>
+				<ul className="drivebar" style={getDriveStyle(current.actions.yard_line)}>
 					<Play
 						team={current.team}
 						actions={current.actions}
 						lastPlay={current.lastPlay}
+						homeTeam={this.props.homeTeam}
 					></Play>
+				</ul>
 			</div>
 		)
 	}
@@ -102,6 +108,8 @@ class Game extends React.Component {
 			isReady : false,
 			pageTitle : 'Waiting',
 			playbyplay : 'Loading plays',
+			homeTeam : '',
+			awayTeam : '',
 			lastPlay : {
 				side : '',
 				yardLine : 0
@@ -118,9 +126,13 @@ class Game extends React.Component {
 			method : 'GET'
 		})
 		.done(function(xhr, status) {
-			ctx.setState({ pageTitle : xhr.away_team.market + ' vs. ' + xhr.home_team.market });
+			ctx.setState({
+				pageTitle : xhr.away_team.market + ' vs. ' + xhr.home_team.market,
+				homeTeam : xhr.home_team.id,
+				awayTeam : xhr.away_team.id
+			});
 
-			ctx.renderPlayByPlay(xhr.quarters[0].pbp);
+			ctx.renderPlayByPlay(xhr.quarters[0].pbp, xhr.home_team.id);
 		})
 		.fail(function(xhr, status, error) {
 			alert( 'error status: ' + status );
@@ -131,16 +143,17 @@ class Game extends React.Component {
 
 	}
 
-	renderPlayByPlay (pbp) {
+	renderPlayByPlay (pbp, homeTeam) {
 		this.setState({ playbyplay : pbp.map((event) => 
 			<Drive
 				key={event.id}
 				type={event.type}
 				team={event.team}
 				summary={event.summary}
-				actions={event.actions}
+				actions={(event.actions) ? event.actions : []}
 				side={event.side}
 				yardline={event.yard_line}
+				homeTeam={homeTeam}
 			>
 			</Drive>
 
@@ -151,16 +164,15 @@ class Game extends React.Component {
 	render() {
 		return (
 			<div class="fieldContainer">
+				<h1>
+					{ this.state.pageTitle }
+				</h1>
 				<div className="fieldSub">
-					<h1>
-						{ this.state.pageTitle }
-					</h1>
 					<div className="field" ref={field => {this.field = field}}>
 						{this.state.playbyplay}
 					</div>
 				</div>
 				<div class="gridiron">
-					<div class="gridline endzone">end zone</div>
 					<div class="gridline">10</div>
 					<div class="gridline">20</div>
 					<div class="gridline">30</div>
@@ -171,7 +183,6 @@ class Game extends React.Component {
 					<div class="gridline">20</div>
 					<div class="gridline">10</div>
 					<div class="gridline"></div>
-					<div class="gridline endzone">end zone</div>
 				</div>
 			</div>
 		)
@@ -197,18 +208,26 @@ function calcYardsPerPlay (startYardline, endYardline, team) {
 	return yards;
 }
 
-function getPlayLengthStyle (team, play, yards) {
+function getDriveStyle (start) {
+	return {
+		marginLeft : (start * 10) + 'px'
+	};
+}
+
+function getPlayLengthStyle (homeTeam, team, play, yards) {
 	let margLeft = (play.side != play.lastSide) ? (play.lastYardLine) : play.lastYardLine;
 	if (team != play.lastSide) {
 		margLeft = 100 - margLeft;
 	}
 	if (yards) {
-		return {
+		let retVal = {
 			// backgroundColor : '#990000',
-			width : (yards * 8) + 'px',
+			width : (yards * 10) + 'px',
 			height : '15px',
-			marginLeft : (margLeft * 8) + 'px'
+			border : 'solid 1px #ccc'
+			// marginLeft : (margLeft * 10) + 'px'
 		}
+		return retVal;
 	} else {
 		return {
 			display : 'none'

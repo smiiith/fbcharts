@@ -14,8 +14,14 @@ code {
 }
 
 .drivebar {
+	display: inline-block;
 	border: none;
 	margin-left: 0;
+	background-color: yellow;
+}
+
+.drivebar li {
+	display: inline-block;
 }
 
 .hometeam {
@@ -28,7 +34,7 @@ code {
 
 .fieldSub {
 	position: absolute;
-	top: 0;
+	top: 100px;
 	z-index: 50;
 }
 
@@ -38,17 +44,17 @@ code {
 
 .gridiron {
 	background-color: #006600;
-	width: 972px;
-	height: 700px;
+	width: 1000px;
+	height: 1000px;
 	border: solid 1px #ffffff;
 	clear: both;
 	position: absolute;
-	top: 0;
+	top: 100px;
 }
 
 .gridline {
 	height: 100%;
-	width: 80px;
+	width: 100px;
 	border-right: solid 1px #ffffff;
 	color: #ffffff;
 	float: left;
@@ -61,3 +67,6 @@ code {
 	color: #000000;
 }
 
+.flipYxxxxx {
+	transform: rotateY(180deg);
+}
