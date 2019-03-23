@@ -51,51 +51,58 @@ function formatActions (actions, team) {
 // previous yard marker
 function Play (props) {
 	let plays = [];
-	// let formattedActions = [];
 
-		// formatActions(props.actions);
+	plays = props.driveData.plays.map((play) =>
+		// <li>{props.homeTeam} == {calcYardsPerPlay( { yard_line : play.lastYardLine, side : play.lastSide }, { yard_line : play.yard_line, side : play.side }, props.team)} :: {play.lastSummary}</li>
+		// <li className="drivebar hometeam" title={play.lastSummary} style={getPlayLengthStyle(props.homeTeam, play.team, play, calcYardsPerPlay( { yard_line : play.lastYardLine, side : play.lastSide }, { yard_line : play.yard_line, side : play.side }, props.team))} >
+		<li className="hometeam">{play.summary}</li>
+	);
 
-	if (props.actions) {
-		let formattedActions = formatActions(props.actions, props.team);
-
-		if (formattedActions.length > 0) {
-
-			plays = formattedActions.map((play) =>
-				// <li>{props.homeTeam} == {calcYardsPerPlay( { yard_line : play.lastYardLine, side : play.lastSide }, { yard_line : play.yard_line, side : play.side }, props.team)} :: {play.lastSummary}</li>
-				<li className="drivebar hometeam" title={play.lastSummary} style={getPlayLengthStyle(props.homeTeam, play.team, play, calcYardsPerPlay( { yard_line : play.lastYardLine, side : play.lastSide }, { yard_line : play.yard_line, side : play.side }, props.team))} >
-				</li>
-			);
-		}
-	}
-return plays;
+	return plays;
 }
 
-class Drive extends React.Component {
+class PlayList extends React.Component {
+
 	constructor (props) {
 		super(props);
 	}
 
 	render() {
-		const current = this.props;
-		// if (!current.actions) {
-		// 	return false;
-		// }
-		// this.setState({ lastPlay : {
-		// 	side : current.side,
-		// 	yardLine : current.yard_line
-		// }});
+		return (
+			<ol className="playlist">
+				<Play
+					team={this.props.team}
+					homeTeam={this.props.isHomeTeam}
+					driveData={this.props.driveData}
+				></Play>
+			</ol>
+		)
+	}
+}
+
+class Drive extends React.Component {
+	constructor (props) {
+		super(props);
+		this.state = {
+			isPlayListHidden : true
+		}
+	}
+
+	toggleHidden () {
+		this.setState({
+			isPlayListHidden : !this.state.isPlayListHidden
+		});
+	}
+
+	render() {
+		const data = this.props;
 
 		return (
-			<div className={(current.team === this.props.homeTeam) ? 'flipY' : ''}>
-				<div>{current.team}</div>
-				<ul className="drivebar" style={getDriveStyle(current.actions.yard_line)}>
-					<Play
-						team={current.team}
-						actions={current.actions}
-						lastPlay={current.lastPlay}
-						homeTeam={this.props.homeTeam}
-					></Play>
-				</ul>
+			<div className={!data.isHomeTeam ? 'flipY' : ''}>
+				<div>{data.team}</div>
+				<div className="drivebar" style={getDriveStyle(data.driveLength, data.startingYardLine)} onMouseEnter={this.toggleHidden.bind(this)} onMouseLeave={this.toggleHidden.bind(this)}>
+					{!this.state.isPlayListHidden && <PlayList team={data.team} homeTeam={data.isHomeTeam} driveData={data.driveData}></PlayList>}
+				</div>
 			</div>
 		)
 	}
@@ -121,21 +128,21 @@ class Game extends React.Component {
 		var ctx = this;
 		var xhr = $.ajax({
 			// url : 'http://api.sportradar.us/ncaafb-t1/2018/REG/19/CLE/BAMA/pbp.json?api_key=mmzmk7zq4nf6bk8strmh937c',
-			url : './gamedata.js',
+			url : './target.json',
 			dataType : 'json',
 			method : 'GET'
 		})
-		.done(function(xhr, status) {
+		.done(function(data, status) {
 			ctx.setState({
-				pageTitle : xhr.away_team.market + ' vs. ' + xhr.home_team.market,
-				homeTeam : xhr.home_team.id,
-				awayTeam : xhr.away_team.id
+				pageTitle : data.away_team.market + ' at ' + data.home_team.market,
+				homeTeam : data.home_team.id,
+				awayTeam : data.away_team.id
 			});
 
-			ctx.renderPlayByPlay(xhr.quarters[0].pbp, xhr.home_team.id);
+			ctx.renderPlayByPlay(data);
 		})
 		.fail(function(xhr, status, error) {
-			alert( 'error status: ' + status );
+			alert('error status: ' + status);
 		})
 		.always(function() {
 			// alert( "complete" );
@@ -143,17 +150,17 @@ class Game extends React.Component {
 
 	}
 
-	renderPlayByPlay (pbp, homeTeam) {
-		this.setState({ playbyplay : pbp.map((event) => 
+	renderPlayByPlay (data) {
+		this.setState({ playbyplay : data.drives.map((event) => 
 			<Drive
 				key={event.id}
-				type={event.type}
-				team={event.team}
-				summary={event.summary}
-				actions={(event.actions) ? event.actions : []}
-				side={event.side}
-				yardline={event.yard_line}
-				homeTeam={homeTeam}
+				team={event.possession}
+				side={event.startingSide}
+				yardline={event.startingYardLine}
+				isHomeTeam={event.isHomeTeam}
+				driveLength={event.driveLength}
+				startingYardLine={event.startingYardLine}
+				driveData={event}
 			>
 			</Drive>
 
@@ -163,7 +170,7 @@ class Game extends React.Component {
 
 	render() {
 		return (
-			<div class="fieldContainer">
+			<div className="fieldContainer">
 				<h1>
 					{ this.state.pageTitle }
 				</h1>
@@ -172,17 +179,17 @@ class Game extends React.Component {
 						{this.state.playbyplay}
 					</div>
 				</div>
-				<div class="gridiron">
-					<div class="gridline">10</div>
-					<div class="gridline">20</div>
-					<div class="gridline">30</div>
-					<div class="gridline">40</div>
-					<div class="gridline">50</div>
-					<div class="gridline">40</div>
-					<div class="gridline">30</div>
-					<div class="gridline">20</div>
-					<div class="gridline">10</div>
-					<div class="gridline"></div>
+				<div className="gridiron">
+					<div className="gridline">10</div>
+					<div className="gridline">20</div>
+					<div className="gridline">30</div>
+					<div className="gridline">40</div>
+					<div className="gridline">50</div>
+					<div className="gridline">40</div>
+					<div className="gridline">30</div>
+					<div className="gridline">20</div>
+					<div className="gridline">10</div>
+					<div className="gridline"></div>
 				</div>
 			</div>
 		)
@@ -192,28 +199,41 @@ class Game extends React.Component {
 
 // ========================================
 
-function calcYardsPerPlay (startYardline, endYardline, team) {
+function showPlays (e) {
+	console.log('showPlays ' + e);
+}
+
+function calcYardsPerPlay (play, team) {
 	let yards = 0;
 	// make this a switch statement
-	if (team == startYardline.side && team == endYardline.side) {
-		yards = endYardline.yard_line - startYardline.yard_line;
-	} else if (team != startYardline.side && team != endYardline.side) {
-		yards = startYardline.yard_line - endYardline.yard_line;
-	} else if (team == startYardline.side && team != endYardline.side) {
-		yards = (50 - startYardline.yard_line) + (50 - endYardline.yard_line);
-	} else if (team != startYardline.side && team == endYardline.side) {
-		yards = -1 * ((50 - startYardline.yard_line) + (50 - endYardline.yard_line));
-	}
+	// if (team == play.startingSide && team == play.endingSide) {
+	// 	yards = endYardline.yard_line - startYardline.yard_line;
+	// } else if (team != play.startingSide && team != play.endingSide) {
+	// 	yards = startYardline.yard_line - endYardline.yard_line;
+	// } else if (team == play.startingSide && team != play.endingSide) {
+	// 	yards = (50 - startYardline.yard_line) + (50 - endYardline.yard_line);
+	// } else if (team != play.startingSide && team == play.endingSide) {
+	// 	yards = -1 * ((50 - startYardline.yard_line) + (50 - endYardline.yard_line));
+	// }
 
 	return yards;
 }
 
-function getDriveStyle (start) {
+function getDriveStyle (driveLength, startingYardLine) {
+	const yardFactor = 10;
 	return {
-		marginLeft : (start * 10) + 'px'
+		width : (driveLength * yardFactor) + 'px',
+		marginLeft : (startingYardLine * yardFactor) + 'px'
 	};
 }
 
+function getPlayStyle (yards) {
+	return {
+		width : (yards * 10) + 'px'
+	}
+}
+
+// deprecated
 function getPlayLengthStyle (homeTeam, team, play, yards) {
 	let margLeft = (play.side != play.lastSide) ? (play.lastYardLine) : play.lastYardLine;
 	if (team != play.lastSide) {

@@ -1,0 +1,137 @@
+{
+	"home_team":{  
+		"id":"BAMA",
+		"name":"Crimson Tide",
+		"market":"Alabama",
+		"remaining_challenges":2,
+		"remaining_timeouts":2,
+		"points":16
+	},
+	"away_team":{  
+		"id":"CLE",
+		"name":"Tigers",
+		"market":"Clemson",
+		"remaining_challenges":2,
+		"remaining_timeouts":2,
+		"points":44
+	},
+	"drives" : [
+		{
+			"id" : "1234567890",
+			"startingYardLine" : 25,
+			"startingSide" : "CLE",
+			"endingYardLine" : 14,
+			"endingSide" : "ALA",
+			"driveLength" : 61,
+			"possession" : "ALA",
+			"isHomeTeam" : true,
+			"plays" : [
+				{
+					"type" : "run",
+					"yardsGained" : 8,
+					"startingYardLine" : 46,
+					"startingSide" : "CLE",
+					"endingYardLine" : 38,
+					"endingSide" : "CLE",
+					"summary" : "Ken Stabler pass to Cliff Branch 8 yards to CLE 38 yard line."
+				},
+				{
+					"type" : "run",
+					"yardsGained" : 3,
+					"startingYardLine" : 46,
+					"startingSide" : "CLE",
+					"endingYardLine" : 38,
+					"endingSide" : "CLE",
+					"summary" : "TWO - Ken Stabler pass to Cliff Branch 8 yards to CLE 38 yard line."
+				},
+				{
+					"type" : "run",
+					"yardsGained" : 17,
+					"startingYardLine" : 46,
+					"startingSide" : "CLE",
+					"endingYardLine" : 38,
+					"endingSide" : "CLE",
+					"summary" : "THREE - Ken Stabler pass to Cliff Branch 8 yards to CLE 38 yard line."
+				}
+			]
+		},
+		{
+			"id" : "1234567890",
+			"startingYardLine" : 15,
+			"startingSide" : "CLE",
+			"endingYardLine" : 14,
+			"endingSide" : "ALA",
+			"driveLength" : 9,
+			"possession" : "CLE",
+			"isHomeTeam" : false,
+			"plays" : [
+				{
+					"type" : "run",
+					"yardsGained" : 8,
+					"startingYardLine" : 46,
+					"startingSide" : "CLE",
+					"endingYardLine" : 38,
+					"endingSide" : "CLE",
+					"summary" : "Ken Stabler pass to Cliff Branch 8 yards to CLE 38 yard line."
+				},
+				{
+					"type" : "run",
+					"yardsGained" : 0,
+					"startingYardLine" : 46,
+					"startingSide" : "CLE",
+					"endingYardLine" : 38,
+					"endingSide" : "CLE",
+					"summary" : "TWO - Ken Stabler pass to Cliff Branch 8 yards to CLE 38 yard line."
+				},
+				{
+					"type" : "run",
+					"yardsGained" : 1,
+					"startingYardLine" : 46,
+					"startingSide" : "CLE",
+					"endingYardLine" : 38,
+					"endingSide" : "CLE",
+					"summary" : "THREE - Ken Stabler pass to Cliff Branch 8 yards to CLE 38 yard line."
+				}
+			]
+		},
+		{
+			"id" : "1234567890",
+			"startingYardLine" : 42,
+			"startingSide" : "CLE",
+			"endingYardLine" : 14,
+			"endingSide" : "ALA",
+			"driveLength" : 17,
+			"possession" : "ALA",
+			"isHomeTeam" : true,
+			"plays" : [
+				{
+					"type" : "run",
+					"yardsGained" : 5,
+					"startingYardLine" : 46,
+					"startingSide" : "CLE",
+					"endingYardLine" : 38,
+					"endingSide" : "CLE",
+					"summary" : "Ken Stabler pass to Cliff Branch 8 yards to CLE 38 yard line."
+				},
+				{
+					"type" : "run",
+					"yardsGained" : 7,
+					"startingYardLine" : 46,
+					"startingSide" : "CLE",
+					"endingYardLine" : 38,
+					"endingSide" : "CLE",
+					"summary" : "TWO - Ken Stabler pass to Cliff Branch 8 yards to CLE 38 yard line."
+				},
+				{
+					"type" : "run",
+					"yardsGained" : 5,
+					"startingYardLine" : 46,
+					"startingSide" : "CLE",
+					"endingYardLine" : 38,
+					"endingSide" : "CLE",
+					"summary" : "THREE - Ken Stabler pass to Cliff Branch 8 yards to CLE 38 yard line."
+				}
+			]
+		}
+	]
+}
