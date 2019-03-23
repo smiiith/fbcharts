@@ -14,18 +14,26 @@ code {
 }
 
 .drivebar {
-	display: inline-block;
+	display: block;
 	border: none;
-	margin-left: 0;
+	padding: 0;
+	margin: 0;
+	height: 10px;
 	background-color: yellow;
 }
 
-.drivebar li {
-	display: inline-block;
+.flipY .drivebar {
+	background-color: #000066;
+}
+
+.playlist {
+	width: 300px;
+	background-color: #cccccc;
+	opacity: 0.85;
 }
 
 .hometeam {
-	background-color: #003366;
+	/*background-color: #003366;*/
 }
 
 .field {
@@ -67,6 +75,6 @@ code {
 	color: #000000;
 }
 
-.flipYxxxxx {
+.flipY {
 	transform: rotateY(180deg);
 }
