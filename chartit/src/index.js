@@ -99,7 +99,7 @@ class Drive extends React.Component {
 
 		return (
 			<div className={!data.isHomeTeam ? 'flipY' : ''}>
-				<div>{data.team}</div>
+				<div>debug: {data.team}</div>
 				<div className="drivebar" style={getDriveStyle(data.driveLength, data.startingYardLine)} onMouseEnter={this.toggleHidden.bind(this)} onMouseLeave={this.toggleHidden.bind(this)}>
 					{!this.state.isPlayListHidden && <PlayList team={data.team} homeTeam={data.isHomeTeam} driveData={data.driveData}></PlayList>}
 				</div>
@@ -222,8 +222,10 @@ function calcYardsPerPlay (play, team) {
 function getDriveStyle (driveLength, startingYardLine) {
 	const yardFactor = 10;
 	return {
-		width : (driveLength * yardFactor) + 'px',
-		marginLeft : (startingYardLine * yardFactor) + 'px'
+		// width : (driveLength * yardFactor) + 'px',
+		// marginLeft : (startingYardLine * yardFactor) + 'px'
+		width : driveLength + '%',
+		marginLeft : startingYardLine + '%'
 	};
 }
 

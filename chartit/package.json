@@ -6,7 +6,8 @@
     "jquery": "^3.3.1",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
-    "react-scripts": "2.1.8"
+    "react-scripts": "2.1.8",
+    "set-default-browser": "^1.0.1"
   },
   "scripts": {
     "start": "react-scripts start",

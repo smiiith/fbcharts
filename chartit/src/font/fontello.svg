@@ -1,0 +1,18 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg">
+<metadata>Copyright (C) 2019 by original authors @ fontello.com</metadata>
+<defs>
+<font id="fontello" horiz-adv-x="1000" >
+<font-face font-family="fontello" font-weight="400" font-stretch="normal" units-per-em="1000" ascent="850" descent="-150" />
+<missing-glyph horiz-adv-x="1000" />
+<glyph glyph-name="left-dir" unicode="&#xe800;" d="M510 93l-510 256 510 259 0-515z" horiz-adv-x="510" />
+
+<glyph glyph-name="right-dir" unicode="&#xe801;" d="M0 608l510-257-510-258 0 515z" horiz-adv-x="510" />
+
+<glyph glyph-name="up-dir" unicode="&#xe802;" d="M0 114l269 473 271-473-540 0z" horiz-adv-x="540" />
+
+<glyph glyph-name="down-dir" unicode="&#xe803;" d="M540 587l-269-473-271 473 540 0z" horiz-adv-x="540" />
+</font>
+</defs>
+</svg>
