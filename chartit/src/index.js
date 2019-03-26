@@ -145,7 +145,9 @@ class Game extends React.Component {
 			alert('error status: ' + status);
 		})
 		.always(function() {
-			// alert( "complete" );
+			// update the grid height
+			document.body.dispatchEvent(new Event('playsLoaded'));
+
 		});
 
 	}
@@ -174,28 +176,60 @@ class Game extends React.Component {
 				<h1>
 					{ this.state.pageTitle }
 				</h1>
-				<div className="fieldSub">
+				<div className="fieldSub" id="fieldContainer">
 					<div className="field" ref={field => {this.field = field}}>
 						{this.state.playbyplay}
 					</div>
 				</div>
-				<div className="gridiron">
-					<div className="gridline">10</div>
-					<div className="gridline">20</div>
-					<div className="gridline">30</div>
-					<div className="gridline">40</div>
-					<div className="gridline">50</div>
-					<div className="gridline">40</div>
-					<div className="gridline">30</div>
-					<div className="gridline">20</div>
-					<div className="gridline">10</div>
-					<div className="gridline"></div>
-				</div>
+
+				<Gridiron />
 			</div>
 		)
 	}
 }
 
+class Gridiron extends React.Component {
+
+	constructor (props) {
+		super(props);
+		this.state = {
+			isPlayListHidden : true,
+			height : '200px'
+		}
+	}
+
+	componentDidMount () {
+		const ctx = this;
+		document.body.addEventListener('playsLoaded', function () { ctx.adjustGridiron (ctx)});
+	}
+
+	adjustGridiron (ctx) {
+		let fieldHeight = document.getElementById('fieldContainer').offsetHeight;
+		fieldHeight = fieldHeight ? fieldHeight + 25 : 25;
+
+		ctx.setState({
+			height : fieldHeight + 'px'
+		});
+	}
+
+	render() {
+		return (
+			<div className="gridiron" ref={elem => this.gridiron = elem} style={ { height: `${ this.state.height }` } }>
+				<div className="gridline">10</div>
+				<div className="gridline">20</div>
+				<div className="gridline">30</div>
+				<div className="gridline">40</div>
+				<div className="gridline">50</div>
+				<div className="gridline">40</div>
+				<div className="gridline">30</div>
+				<div className="gridline">20</div>
+				<div className="gridline">10</div>
+				<div className="gridline"></div>
+			</div>
+		)
+	}
+
+}
 
 // ========================================
 
