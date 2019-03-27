@@ -1,7 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import ReactModal from 'react-modal';
 import $ from 'jquery';
 import './index.css';
+
+// bind modal to root app element
+ReactModal.setAppElement('#root');
 
 function formatActions (actions, team) {
 	var newActions = [];
@@ -65,17 +69,38 @@ class PlayList extends React.Component {
 
 	constructor (props) {
 		super(props);
+		console.log('playlist constructor ' + this.props.isOpen);
+		this.state = {
+			showModal : false
+		};
+
+	}
+
+	closeModal () {
+		this.setState({
+			showModal : false
+		});
+		// alert(this.state.showModal);
 	}
 
 	render() {
+		console.log('isOpen ' + this.props.isOpen);
+		const ctx = this;
 		return (
-			<ol className="playlist">
-				<Play
-					team={this.props.team}
-					homeTeam={this.props.isHomeTeam}
-					driveData={this.props.driveData}
-				></Play>
-			</ol>
+	        <ReactModal 
+	           isOpen={this.props.isOpen}
+	           contentLabel="Minimal Modal Example"
+	        >
+	        	<button onClick={this.props.closeCallback}>close callback</button>
+				<button onClick={function () { ctx.closeModal() } }>Close Modal</button>
+				<ol className="playlist">
+					<Play
+						team={this.props.team}
+						homeTeam={this.props.isHomeTeam}
+						driveData={this.props.driveData}
+					></Play>
+				</ol>
+	        </ReactModal>
 		)
 	}
 }
@@ -84,8 +109,36 @@ class Drive extends React.Component {
 	constructor (props) {
 		super(props);
 		this.state = {
-			isPlayListHidden : true
+			isPlayListHidden : true,
+			showModal : false
 		}
+
+		// this.handleOpenModal = () => {
+		// 	console.log('open modal');
+		// 	this.setState({
+		// 		showModal : true
+		// 	});
+		// }
+
+	    this.handleOpenModal = this.handleOpenModal.bind(this);
+	    this.handleCloseModal = this.handleCloseModal.bind(this);
+	}
+
+	componentDidMount () {
+		let ctx = this;
+
+		// listen for escape key and hide playlist when clicked
+		window.addEventListener('keyup', function (e) {
+			if (e.key === 'Escape') {
+				ctx.closePlaylist();
+			}
+		});
+	}
+
+	closePlaylist () {
+		this.setState({
+			isPlayListHidden : true
+		});
 	}
 
 	toggleHidden () {
@@ -94,14 +147,36 @@ class Drive extends React.Component {
 		});
 	}
 
-	render() {
-		const data = this.props;
+	handleOpenModal () {
+		this.setState({ showModal: true });
+	}
 
+	handleCloseModal () {
+		console.log('drive close func');
+		this.setState({ showModal: false }, function () {
+			console.log('drive callback func');
+			this.setState({ showModal : false });
+		});
+
+	  //   this.setState((prevState, props) => ({
+			// showModal: false
+	  //   }));
+	}
+
+	render() {
+		console.log('drive render func ' + this.state.showModal);
+		const data = this.props;
 		return (
 			<div className={!data.isHomeTeam ? 'flipY' : ''}>
 				<div>debug: {data.team}</div>
-				<div className="drivebar" style={getDriveStyle(data.driveLength, data.startingYardLine)} onMouseEnter={this.toggleHidden.bind(this)} onMouseLeave={this.toggleHidden.bind(this)}>
-					{!this.state.isPlayListHidden && <PlayList team={data.team} homeTeam={data.isHomeTeam} driveData={data.driveData}></PlayList>}
+				<div className="drivebar" style={getDriveStyle(data.driveLength, data.startingYardLine)} onClick={this.handleOpenModal}>
+					<PlayList 
+						closeCallback={this.handleCloseModal} 
+						isOpen={this.state.showModal}
+						team={data.team}
+						homeTeam={data.isHomeTeam} 
+						driveData={data.driveData}>
+					</PlayList>
 				</div>
 			</div>
 		)

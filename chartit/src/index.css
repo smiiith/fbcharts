@@ -37,6 +37,7 @@ code {
 	margin: 0;
  	height: 10px;
  	line-height: 0.65rem;
+ 	text-align: right;
 	background-color: yellow;
 }
 
@@ -44,18 +45,31 @@ code {
 	background-color: #000066;
 }
 
-.drivebar:before {
+.drivebar:after {
 	font-family: fontello;
 	font-size: 1.25rem;
-	content: '\e800';
-	margin-left: -10px;
+	content: '\e801';
+	margin-right: -10px;
 	color: yellow;
+}
+
+.playlistContainer {
+	display: block;
+	background-color: pink;
 }
 
 .playlist {
 	width: 300px;
 	background-color: #cccccc;
 	opacity: 0.85;
+/*	position: absolute;
+	top: 0;
+*/}
+
+.closeIcon {
+	position: absolute;
+	top: 0;
+	right: 0;
 }
 
 .hometeam {
