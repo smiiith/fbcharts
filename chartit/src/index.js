@@ -154,13 +154,9 @@ class Drive extends React.Component {
 	handleCloseModal () {
 		console.log('drive close func');
 		this.setState({ showModal: false }, function () {
-			console.log('drive callback func');
+			// make sure this state is set when the component renders
 			this.setState({ showModal : false });
 		});
-
-	  //   this.setState((prevState, props) => ({
-			// showModal: false
-	  //   }));
 	}
 
 	render() {
@@ -168,8 +164,8 @@ class Drive extends React.Component {
 		const data = this.props;
 		return (
 			<div className={!data.isHomeTeam ? 'flipY' : ''}>
-				<div>debug: {data.team}</div>
 				<div className="drivebar" style={getDriveStyle(data.driveLength, data.startingYardLine)} onClick={this.handleOpenModal}>
+				<div className="homeTeamIcon">{data.team}</div>
 					<PlayList 
 						closeCallback={this.handleCloseModal} 
 						isOpen={this.state.showModal}
@@ -331,8 +327,6 @@ function calcYardsPerPlay (play, team) {
 function getDriveStyle (driveLength, startingYardLine) {
 	const yardFactor = 10;
 	return {
-		// width : (driveLength * yardFactor) + 'px',
-		// marginLeft : (startingYardLine * yardFactor) + 'px'
 		width : driveLength + '%',
 		marginLeft : startingYardLine + '%'
 	};
@@ -346,8 +340,8 @@ function getPlayStyle (yards) {
 
 // deprecated
 function getPlayLengthStyle (homeTeam, team, play, yards) {
-	let margLeft = (play.side != play.lastSide) ? (play.lastYardLine) : play.lastYardLine;
-	if (team != play.lastSide) {
+	let margLeft = (play.side !== play.lastSide) ? (play.lastYardLine) : play.lastYardLine;
+	if (team !== play.lastSide) {
 		margLeft = 100 - margLeft;
 	}
 	if (yards) {

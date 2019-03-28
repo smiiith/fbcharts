@@ -34,11 +34,11 @@ code {
 	display: block;
 	border: none;
 	padding: 0;
-	margin: 0;
+	margin: 10px 0;
  	height: 10px;
- 	line-height: 0.65rem;
+ 	line-height: 0.55rem;
  	text-align: right;
-	background-color: yellow;
+	background-color: #ffff00;
 }
 
 .flipY .drivebar {
@@ -50,7 +50,11 @@ code {
 	font-size: 1.25rem;
 	content: '\e801';
 	margin-right: -10px;
-	color: yellow;
+	color: #ffff00;
+}
+
+.flipY .drivebar:after {
+	color: #000066;
 }
 
 .playlistContainer {
@@ -79,6 +83,7 @@ code {
 .field {
 	/*width: 800px;*/
 	width: 100%;
+	margin: 25px 0;
 }
 
 .fieldSub {
@@ -121,4 +126,16 @@ code {
 
 .flipY {
 	transform: rotateY(180deg);
+}
+
+.homeTeamIcon {
+	border-radius: 25px;
+	padding: 2px 4px;
+	width: auto;
+	height: 12px;
+	display: inline-block;
+	background-color: orange;
+	position: relative;
+	right: 5px;
+	top: -3px;
 }
