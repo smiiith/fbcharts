@@ -199,18 +199,23 @@ class Game extends React.Component {
 		var ctx = this;
 		var xhr = $.ajax({
 			// url : 'http://api.sportradar.us/ncaafb-t1/2018/REG/19/CLE/BAMA/pbp.json?api_key=mmzmk7zq4nf6bk8strmh937c',
-			url : './target.json',
+			// url : './target.json',
+			url : './gamedata.js',
 			dataType : 'json',
 			method : 'GET'
 		})
 		.done(function(data, status) {
-			ctx.setState({
-				pageTitle : data.away_team.market + ' at ' + data.home_team.market,
-				homeTeam : data.home_team.id,
-				awayTeam : data.away_team.id
-			});
+			// debug data
+			console.log(normalizeData(data));
 
-			ctx.renderPlayByPlay(data);
+			// show the grid
+			// ctx.setState({
+			// 	pageTitle : data.away_team.market + ' at ' + data.home_team.market,
+			// 	homeTeam : data.home_team.id,
+			// 	awayTeam : data.away_team.id
+			// });
+
+			// ctx.renderPlayByPlay(data);
 		})
 		.fail(function(xhr, status, error) {
 			alert('error status: ' + status);
@@ -224,7 +229,7 @@ class Game extends React.Component {
 	}
 
 	renderPlayByPlay (data) {
-		this.setState({ playbyplay : data.drives.map((event) => 
+		this.setState({ playbyplay : data.quarters[0].drives.map((event) => 
 			<Drive
 				key={event.id}
 				team={event.possession}
@@ -360,6 +365,43 @@ function getPlayLengthStyle (homeTeam, team, play, yards) {
 	}
 }
 
+function normalizeData (gameData) {
+	let targetData = {};
+
+	// pbp == drive
+	targetData.home_team = gameData.home_team;
+	targetData.away_team = gameData.away_team;
+	targetData.quarters = [];
+
+	// loop quarters
+	gameData.quarters.forEach(function (quarter, quarterIdx) {
+		let counter = 0;
+		targetData.quarters.push({ 'number' : quarter.number });
+
+		let thisQuarter = targetData.quarters[quarterIdx];
+		thisQuarter.drives = [];
+
+		// loop drives
+		quarter.pbp.forEach(function (drive, driveIdx) {
+
+			if (drive.actions) {
+				// thisQuarter.drives.push(drive);
+				// console.log('counter = ' + counter);
+				thisQuarter.drives.push({}); // push a new drive onto this quarter
+				let thisDrive = thisQuarter.drives[counter];
+				thisDrive.possession = drive.team;
+				thisDrive.startingYardLine = drive.actions[0].yard_line;
+				thisDrive.startingSide = drive.actions[0].side;
+				thisDrive.endingYardLine = drive.actions[drive.actions.length-1].yard_line || 0;
+				thisDrive.endingSide = drive.actions[drive.actions.length-1].side;
+				counter++;
+			}
+		});
+
+	});
+
+	return targetData;	
+}
 
 // ========================================
 ReactDOM.render(
